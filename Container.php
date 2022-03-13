@@ -736,12 +736,12 @@ class Container implements ArrayAccess, ContainerContract
 
         $concrete = $this->getContextualConcrete($abstract);
 
-        $needsContextualBuild = ! empty($parameters) || ! is_null($concrete);
+        $notNeedsContextualBuild = empty($parameters) && is_null($concrete);
 
         // If an instance of the type is currently being managed as a singleton we'll
         // just return an existing instance instead of instantiating new instances
         // so the developer can keep using the same objects instance every time.
-        if (isset($this->instances[$abstract]) && ! $needsContextualBuild) {
+        if (isset($this->instances[$abstract]) && $notNeedsContextualBuild) {
             return $this->instances[$abstract];
         }
 
@@ -770,7 +770,7 @@ class Container implements ArrayAccess, ContainerContract
         // If the requested type is registered as a singleton we'll want to cache off
         // the instances in "memory" so we can return it later without creating an
         // entirely new instance of an object on each subsequent request for it.
-        if ($this->isShared($abstract) && ! $needsContextualBuild) {
+        if ($this->isShared($abstract) && $notNeedsContextualBuild) {
             $this->instances[$abstract] = $object;
         }
 
